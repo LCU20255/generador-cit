@@ -79,8 +79,15 @@ def generate_carnets():
     tipo_personal = data.get('tipo_personal', 'militar')
     
     # 1. Limpiar carpeta temp antigua para evitar consumo de disco
-    for file in os.listdir(FOLDERS['temp']):
-        os.remove(os.path.join(FOLDERS['temp'], file))
+    for filename in os.listdir(FOLDERS['temp']):
+        file_path = os.path.join(FOLDERS['temp'], filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.remove(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            pass
         
     try:
         # 2. Compilar
