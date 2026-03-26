@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Carnets | CIT</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="background-decor">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <header class="header blur-glass">
+        <div class="logo-container">
+            <div class="logo-box">
+                <i class="fa-solid fa-id-badge"></i>
+            </div>
+            <div>
+                <h1>CIT • Generador de Carnets</h1>
+                <p class="subtitle">Plataforma de Emisión Automatizada</p>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Control Type Selector -->
+        <section class="card glass-card type-selector-section animate-slide-up">
+            <div class="section-title">
+                <i class="fa-solid fa-users-gear"></i>
+                <h2>Selecciona el Tipo de Personal</h2>
+            </div>
+            <p>Define bajo qué esquema lógico y gráfico se procesará este lote.</p>
+            
+            <div class="toggle-container">
+                <input type="radio" id="btn-militar" name="tipo_personal" value="militar" checked>
+                <label for="btn-militar" class="toggle-btn">
+                    <i class="fa-solid fa-shield-halved"></i> Personal Militar
+                </label>
+
+                <input type="radio" id="btn-admin" name="tipo_personal" value="administrativo">
+                <label for="btn-admin" class="toggle-btn">
+                    <i class="fa-solid fa-user-tie"></i> Personal Administrativo / Contratado
+                </label>
+            </div>
+
+            <!-- Dynamic Alerts -->
+            <div id="alert-militar" class="alert-box alert-militar active">
+                <div class="alert-icon"><i class="fa-solid fa-circle-info"></i></div>
+                <div class="alert-content">
+                    <h4>Requisitos para Militar:</h4>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> El Excel <b>DEBE</b> contener la columna <code>Rango</code>.</li>
+                        <li><i class="fa-solid fa-check"></i> Requiere archivo <code>template_final.tif</code> (Frontal).</li>
+                        <li><i class="fa-solid fa-check"></i> Subir en el servidor los iconos de Insignias (.png).</li>
+                        <li class="warning"><i class="fa-solid fa-triangle-exclamation"></i> No utiliza template reverso (El reverso es genérico sin datos dinámicos).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div id="alert-admin" class="alert-box alert-admin hidden">
+                <div class="alert-icon"><i class="fa-solid fa-circle-info"></i></div>
+                <div class="alert-content">
+                    <h4>Requisitos para Administrativo / Contratado:</h4>
+                    <ul>
+                        <li><i class="fa-solid fa-check"></i> Requiere archivo <code>template_final.tif</code> (Frontal).</li>
+                        <li><i class="fa-solid fa-check"></i> Requiere archivo <code>template_reverso.tif</code> (Trasero).</li>
+                        <li class="info"><i class="fa-solid fa-circle-check"></i> Las insignias almacenadas no afectarán el diseño.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Upload Sections -->
+        <section class="card glass-card upload-section animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="section-title">
+                <i class="fa-solid fa-file-excel"></i>
+                <h2>1. Base de Datos (Excel)</h2>
+            </div>
+            <p>Sube el archivo xls/xlsx con toda la data del lote. Se guardará de manera independiente según el tipo de personal seleccionado.</p>
+            
+            <div id="section-excel-militar">
+                <div class="drop-zone" id="drop-excel-militar">
+                    <i class="fa-solid fa-cloud-arrow-up drop-icon" style="color: var(--cit-military)"></i>
+                    <span class="drop-text">Arrastra el Excel MILITAR aquí</span>
+                    <input type="file" id="file-excel-militar" class="file-input" accept=".xlsx, .xls">
+                </div>
+                <div id="status-excel-militar" class="status-msg"></div>
+            </div>
+
+            <div id="section-excel-admin" style="display: none;">
+                <div class="drop-zone" id="drop-excel-admin">
+                    <i class="fa-solid fa-cloud-arrow-up drop-icon" style="color: var(--cit-admin)"></i>
+                    <span class="drop-text">Arrastra el Excel ADMINISTRATIVO aquí</span>
+                    <input type="file" id="file-excel-admin" class="file-input" accept=".xlsx, .xls">
+                </div>
+                <div id="status-excel-admin" class="status-msg"></div>
+            </div>
+        </section>
+
+        <section class="card glass-card upload-section animate-slide-up" style="animation-delay: 0.2s;">
+            <div class="section-title">
+                <i class="fa-solid fa-camera-retro"></i>
+                <h2>2. Fotografías del Personal</h2>
+            </div>
+            <p>Selecciona todas las fotos. Sus nombres deben ser exactamente iguales a los que declaraste en la columna "Foto" del Excel.</p>
+            <div class="drop-zone" id="drop-fotos">
+                <i class="fa-solid fa-images drop-icon"></i>
+                <span class="drop-text">Arrastra múltiples fotos (JPG, PNG) aquí</span>
+                <input type="file" id="file-fotos" class="file-input" accept="image/*" multiple>
+            </div>
+            <div id="status-fotos" class="status-msg"></div>
+        </section>
+
+        <section class="card glass-card upload-section animate-slide-up" style="animation-delay: 0.3s;">
+            <div class="section-title">
+                <i class="fa-solid fa-palette"></i>
+                <h2>3. Elementos Gráficos y Plantillas</h2>
+            </div>
+            <div class="grid-2">
+                <div>
+                    <h3>Plantillas Base TIF</h3>
+                    <p id="plantilla-helper">TIF Alta Resolución (>300DPI)</p>
+                    <div class="drop-zone" id="drop-plantillas">
+                        <i class="fa-solid fa-layer-group drop-icon"></i>
+                        <span class="drop-text">Subir Archivos TIF</span>
+                        <input type="file" id="file-plantillas" class="file-input" accept=".tif,.tiff" multiple>
+                    </div>
+                </div>
+                <div id="box-insignias">
+                    <h3>Insignias / Rangos (Militar)</h3>
+                    <p>Archivos PNG transparentes.</p>
+                    <div class="drop-zone" id="drop-insignias">
+                        <i class="fa-solid fa-medal drop-icon"></i>
+                        <span class="drop-text">Subir PNGs</span>
+                        <input type="file" id="file-insignias" class="file-input" accept="image/png" multiple>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="insignias-list" id="insignias-container">
+                <h4><i class="fa-solid fa-server"></i> Insignias Actuales en Servidor:</h4>
+                <ul id="insignias-ul">
+                    <!-- JS rellena esto dinamicamente -->
+                </ul>
+            </div>
+        </section>
+
+        <section class="action-section animate-slide-up" style="animation-delay: 0.4s;">
+            <button id="btn-generar" class="btn-primary">
+                <i class="fa-solid fa-bolt"></i> Iniciar Generación en Lote
+            </button>
+            <div id="loading-spinner" class="hidden">
+                <div class="spinner"></div>
+                <div class="loading-text">
+                    <h4>Procesando Imágenes en Alta Resolución...</h4>
+                    <p>Por favor, no cierres esta ventana. El proceso puede tomar unos minutos dependiendo del lote.</p>
+                </div>
+            </div>
+            <div id="download-link" class="hidden"></div>
+        </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
